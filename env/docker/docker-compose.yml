@@ -1,0 +1,38 @@
+version: '3.9'
+
+
+services:
+  scrape:
+    build:
+      context:
+        $ROOT/scrape/env/
+      dockerfile:
+        docker/Dockerfile
+    env_file:
+      - common.env
+    image: 
+      kagemeka/ruijimanga-scrape
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - type: tmpfs
+        target: /tmp/
+        read_only: false
+      - type: bind
+        source: /tmp/.X11-unix
+        target: /tmp/.X11-unix 
+        read_only: false 
+        volume:
+          nocopy: true
+      - type: bind 
+        source: $ROOT/scrape/
+        target: /root/scrape/
+        read_only: false 
+        volume:
+          nocopy: true
+      
+      - type: bind
+        source: ~/.aws
+        target: /root/.aws
+        read_only: true
+    
