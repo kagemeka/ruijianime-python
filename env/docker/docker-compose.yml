@@ -11,7 +11,7 @@ services:
     env_file:
       - common.env
     image: 
-      kagemeka/ruijimanga-scrape
+      kagemeka/ruijianime-scrape
     restart: unless-stopped
     tty: true
     volumes:
