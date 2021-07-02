@@ -33,13 +33,6 @@ class Metadata():
   
 
 
-@dataclasses.dataclass
-class Tag():
-  name: str 
-  tag_id: int
-  featured: bool
-  ratio: typing.Optional[float]
-
 
 
 import re
@@ -51,11 +44,21 @@ class ScrapeMetadata():
 
   def __call__(
     self,
-    section: bs4.element.Tag,
+    soup: bs4.BeautifulSoup,
   ) -> Metadata:
-    self.__section = section
+    self.__soup = soup 
+    self.__find_section()
     self.__scrape()
     return self.__meta
+
+
+  def __find_section(
+    self,
+  ) -> typing.NoReturn:
+    section = self.__soup.find(
+      id='ind_comic',
+    )
+    self.__section = section
   
 
   def __get_title(
@@ -177,6 +180,98 @@ class ScrapeMetadata():
     )
 
 
+
+from pprint import (
+  pprint,
+)
+
+@dataclasses.dataclass
+class Tag():
+  name: str 
+  tag_id: int
+  featured: bool = False
+  ratio: typing.Optional[
+    float
+  ] = None
+
+
+
+class ScrapeTag():
+  
+  def __call__(
+    self,
+    soup: bs4.BeautifulSoup,
+  ) -> typing.NoReturn:
+    self.__soup = soup
+    self.__scrape()
+    return self.__tags
+  
+
+  def __get_featured_tags(
+    self,
+  ) -> typing.NoReturn:
+    js = self.__soup.find_all(
+      'script', 
+      type='text/javascript',
+    )[1]
+    js = ''.join(str(js).split())
+    ptn = re.compile(
+      # r'.*world_data.addRows\(([^)]*)\).*',
+      r'.*world_data.addRows\(([^;]*)\);.*',
+    )
+    m = re.match(ptn, js)
+    tags = eval(m.group(1))
+    df = pd.DataFrame(
+      tags,
+      columns=['name', 'amount'],
+    )
+    tot = df.amount.sum()
+    df['ratio'] = (
+      df.amount / tot
+    )
+    tags = dict(zip(
+      df.name, 
+      df.ratio,
+    ))
+    self.__tags = tags
+
+
+  def __get_tags(
+    self,
+  ) -> typing.NoReturn:
+    self.__get_featured_tags()
+    featured = self.__tags
+    elms = self.__soup.find(
+      id='ind_main_keyword',
+    ).find_all('a')
+    tags = []
+    for elm in elms:
+      name = elm.text
+      url = elm.get('href')
+      tag_id = int(
+        url.split('=')[-1],
+      )
+      tag = Tag(
+        name,
+        tag_id,
+      )
+      if name in featured:
+        tag.featured = True
+        tag.ratio = featured[
+          name
+        ]
+      tags.append(tag)
+    self.__tags = tags
+
+
+  def __scrape(
+    self,
+  ) -> typing.NoReturn:
+    self.__get_tags()
+
+
+
+
 @dataclasses.dataclass
 class Comic():
   comic_id: int
@@ -192,8 +287,8 @@ class ScrapeComic():
   ) -> Comic:
     self.__id = comic_id
     self.__make_soup()
-    self.__find_section()
     self.__scrape()
+    return self.__comic
   
 
   def __init__(
@@ -222,23 +317,82 @@ class ScrapeComic():
     self.__soup = soup
   
 
-  def __find_section(
+  def __scrape(
     self,
   ) -> typing.NoReturn:
-    section = self.__soup.find(
-      id='ind_comic',
+    soup = self.__soup
+    self.__comic = Comic(
+      self.__id,
+      ScrapeMetadata()(soup),
+      ScrapeTag()(soup),
     )
-    self.__section = section
+    
+
+
+
+class ScrapeComics():
+
+  def __call__(
+    self,
+  ) -> typing.Iterator[Comic]:
+    return self.__scrape()
+  
+
+  def __get_comic_ids(
+    self,
+    query: str,
+  ) -> typing.NoReturn:
+    ids = self.__ids
+    response = requests.get(
+      f'{self.__base_url}'
+      f'{query}',
+    )
+    soup = bs4.BeautifulSoup(
+      response.content,
+      'html.parser',
+    )
+    elms = soup.find(
+      id='all_title',
+    ).find('ul').find_all('li')
+    for elm in elms:
+      url = elm.find(
+        'a',
+      ).get('href')
+      id_ = url.split('=')[-1]
+      ids.append(id_)
+
+
+  def __find_comic_ids(
+    self,
+  ) -> typing.NoReturn:
+    query = (
+      'a', 'ka', 'sa', 'ta',
+      'na', 'ha', 'ma', 'ya',
+      'ra', 'wa',
+    )
+    self.__ids = []
+    for q in query:
+      self.__get_comic_ids(q)
+
+
+  def __init__(
+    self,
+  ) -> typing.NoReturn:
+    self.__base_url = (
+      'http://ruijianime.com/'
+      'comic/title/all_title'
+      '.php?q='
+    )
 
 
   def __scrape(
     self,
-  ) -> typing.NoReturn:
-    section = self.__section
-    meta = ScrapeMetadata()
-    res = meta(section)
-    print(res)
-    
+  ) -> typing.Iterator[Comic]:
+    self.__find_comic_ids()
+    f = ScrapeComic()
+    for i in self.__ids:
+      yield f(i)
+
 
 
 def main():
@@ -248,10 +402,15 @@ def main():
   )
 
   id_ = 26785
-  id_ = 303
+  # id_ = 303
+  # id_ = 1
 
-  scrape = ScrapeComic()
-  scrape(id_)
+  # scrape = ScrapeComic()
+  # scrape(id_)
+  comics = ScrapeComics()()
+  for comic in comics:
+    print(comic)
+    # break
   
 
 
