@@ -7,6 +7,7 @@ ARG GECKO_VER=0.29.0
 RUN \
   apt update \
   && apt install -y \
+  firefox \
   python3-pip \
   wget \
   zip \

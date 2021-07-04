@@ -289,6 +289,74 @@ class ScrapeMetadata():
 
 
 
+
+@dataclasses.dataclass
+class Composition():
+  story: float
+  drawing: float
+  direction: float
+  character: float
+  sound: float
+  voice_actor: float
+
+
+
+class ScrapeComposition():
+  def __call__(
+    self,
+    soup: bs4.BeautifulSoup,
+  ) -> Composition:
+    self.__soup = soup
+    self.__scrape()
+    return self.__comp
+
+
+  def __find_elements(
+    self,
+  ) -> typing.NoReturn:
+    js = self.__soup.find_all(
+      'script',
+      type='text/javascript',
+    )[2]
+    js = ''.join(
+      str(js).split(),
+    )
+    ptn = re.compile(
+      r'.*res_data.addRows\('
+      r'([^;]*)\);.*',
+    )
+    m = re.match(ptn, js)
+    comp = eval(m.group(1))
+    comp = np.array(
+      comp,
+    )[:, 1].astype(float) / 100
+    self.__elms = comp
+
+
+  def __scrape(
+    self,
+  ) -> typing.NoReturn:
+    self.__find_elements()
+    self.__comp = Composition(
+      *self.__elms,
+    )
+
+
+
+from selenium.webdriver import(
+  Firefox,
+  FirefoxOptions,
+)
+
+from \
+  selenium.webdriver \
+  .remote.webdriver \
+import (
+  WebDriver,
+)
+
+
+
 @dataclasses.dataclass
 class Anime():
   metadata: Metadata
@@ -331,7 +399,6 @@ class ScrapeAnime():
       'html.parser',
     )
     self.__soup = soup
-  
 
 
   def __scrape(
@@ -339,6 +406,9 @@ class ScrapeAnime():
   ) -> typing.NoReturn:
     soup = self.__soup
     scrape = ScrapeMetadata()
+    res = scrape(soup)
+    print(res)
+    scrape = ScrapeComposition()
     res = scrape(soup)
     print(res)
     self.__anime = None
@@ -373,11 +443,21 @@ def main():
   # pprint(ids)
 
 
-  id_ = 3354
-  id_ = 3362
+  # opt = FirefoxOptions()
+  # opt.headless = True
+  # driver = Firefox(
+  #   options=opt,
+  # )
 
-  scrape = ScrapeAnime()
-  scrape(id_)
+  ids = [
+    3354,
+    3362,
+  ]
+  for i in ids:
+    scrape = ScrapeAnime(
+      # driver,
+    )
+    scrape(i)
 
   
 
