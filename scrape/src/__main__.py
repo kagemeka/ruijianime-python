@@ -4,22 +4,14 @@ import numpy as np
 import requests
 import pandas as pd
 import re
-
-
-
-import bs4
-import dataclasses
-import typing
-
-
 from pprint import (
   pprint,
 )
 
 
-
-
-    
+import bs4
+import dataclasses
+import typing
 
 
 
@@ -35,6 +27,14 @@ from \
 import (
   ScrapeComics,
 )
+from \
+  lib.ruijianime \
+  .scrape.comic_tags \
+import (
+  ScrapeTags,
+)
+
+
 
 
 
@@ -47,13 +47,15 @@ def main():
 
   id_ = 26785
 
-  find = FindAllComicIds()
-  ids = find()
-  comics = ScrapeComics()(ids)
-  for comic in comics:
-    print(comic)
-    # break
-  
+  # find = FindAllComicIds()
+  # ids = find()
+  # comics = ScrapeComics()(ids)
+  # for comic in comics:
+  #   print(comic)
+  #   # break
+  find = ScrapeTags()
+  tags = find()
+  pprint(tags)
 
 
 
