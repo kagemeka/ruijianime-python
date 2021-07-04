@@ -121,6 +121,12 @@ class ScrapeStaff():
 
 
 
+@dataclasses.dataclass
+class VoiceActor():
+  name: str
+  role: str
+
+
 from unicodedata import (
   normalize,
 )
@@ -134,6 +140,10 @@ class Metadata():
   media: str
   staffs: typing.List[Staff]
   links: typing.List[str]
+  voice_actors: typing.List[
+    VoiceActor
+  ]
+  overview: str
 
 
 
@@ -184,7 +194,6 @@ class ScrapeMetadata():
     s = s.split(':')[1].strip()
     self.__media = s
 
-    
 
   def __get_staffs(
     self,
@@ -193,6 +202,22 @@ class ScrapeMetadata():
     self.__staffs = f(
       self.__abst,
     )
+  
+
+  def __get_voice_actors(
+    self,
+  ) -> typing.NoReturn:
+    elms = self.__abst.find(
+      class_='origin_cast',
+    ).find_all('li')
+    ls = []
+    for elm in elms:
+      s = elm.text.strip()
+      actor = VoiceActor(
+        *s.split(':')[::-1],
+      )
+      ls.append(actor)
+    self.__voice_actors = ls 
     
   
   def __get_year_season(
@@ -225,6 +250,17 @@ class ScrapeMetadata():
       elm.get('href')
       for elm in elms
     ]
+  
+
+  def __get_overview(
+    self,
+  ) -> typing.NoReturn:
+    s = self.__section.find(
+      id='abst_exp',
+    ).find('p').text
+    self.__overview = ' '.join(
+      s.split()[:-1],
+    )
 
 
   def __scrape(
@@ -237,6 +273,8 @@ class ScrapeMetadata():
     self.__get_staffs()
     self.__get_links()
     self.__get_media()
+    self.__get_voice_actors()
+    self.__get_overview()
     self.__meta = Metadata(
       self.__title,
       self.__year,
@@ -244,6 +282,8 @@ class ScrapeMetadata():
       self.__media,
       self.__staffs,
       self.__links,
+      self.__voice_actors,
+      self.__overview,
     )
   
 
