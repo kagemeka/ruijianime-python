@@ -335,24 +335,27 @@ class ScrapeComic():
     
 
 
-# class FindComicId():
+class FindAllComicIds():
   
-  # def __cl
-
-
-class ScrapeComics():
-
   def __call__(
     self,
-  ) -> typing.Iterator[Comic]:
-    return self.__scrape()
+  ) -> typing.List[int]:
+    self.__find()
+    return self.__ids
   
 
-  def __get_comic_ids(
+  def __find(
+    self,
+  ) -> typing.NoReturn:
+    self.__ids = []
+    for q in self.__query:
+      self.__find_per_page(q)
+
+
+  def __find_per_page(
     self,
     query: str,
   ) -> typing.NoReturn:
-    ids = self.__ids
     response = requests.get(
       f'{self.__base_url}'
       f'{query}',
@@ -368,21 +371,9 @@ class ScrapeComics():
       url = elm.find(
         'a',
       ).get('href')
-      id_ = url.split('=')[-1]
-      ids.append(id_)
-
-
-  def __find_comic_ids(
-    self,
-  ) -> typing.NoReturn:
-    query = (
-      'a', 'ka', 'sa', 'ta',
-      'na', 'ha', 'ma', 'ya',
-      'ra', 'wa',
-    )
-    self.__ids = []
-    for q in query:
-      self.__get_comic_ids(q)
+      self.__ids.append(
+        int(url.split('=')[-1])
+      )
 
 
   def __init__(
@@ -393,12 +384,30 @@ class ScrapeComics():
       'comic/title/all_title'
       '.php?q='
     )
+    self.__query = (
+      'a', 'ka', 'sa', 'ta',
+      'na', 'ha', 'ma', 'ya',
+      'ra', 'wa',
+    )
+
+
+
+
+class ScrapeComics():
+
+  def __call__(
+    self,
+    comic_ids: typing.List[
+      int
+    ],
+  ) -> typing.Iterator[Comic]:
+    self.__ids = comic_ids
+    return self.__scrape()
 
 
   def __scrape(
     self,
   ) -> typing.Iterator[Comic]:
-    self.__find_comic_ids()
     f = ScrapeComic()
     for i in self.__ids:
       yield f(i)
@@ -412,12 +421,10 @@ def main():
   )
 
   id_ = 26785
-  # id_ = 303
-  # id_ = 1
 
-  # scrape = ScrapeComic()
-  # scrape(id_)
-  comics = ScrapeComics()()
+  find = FindAllComicIds()
+  ids = find()
+  comics = ScrapeComics()(ids)
   for comic in comics:
     print(comic)
     # break
