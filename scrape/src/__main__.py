@@ -24,7 +24,7 @@ class Metadata():
   magazine: typing.Optional[
     str
   ]
-  publisher: str
+  publishers: typing.List[str]
   anime_id: typing.Optional[
     int
   ]
@@ -117,15 +117,17 @@ class ScrapeMetadata():
       elm.text if elm else None
     )
 
-  def __get_publisher(
+  def __get_publishers(
     self,
   ) -> typing.NoReturn:
-    elm = self.__abst.find_all(
+    ls = self.__abst.find_all(
       'p',
     )[2].text.split(
       '/',
-    )[-1].strip()
-    self.__publisher = elm
+    )[1:]
+    self.__publishers = [
+      e.strip() for e in ls
+    ]
 
 
   def __get_overview(
@@ -166,7 +168,7 @@ class ScrapeMetadata():
     self.__get_start_year()
     self.__get_authors()
     self.__get_magazine()
-    self.__get_publisher()
+    self.__get_publishers()
     self.__get_overview()
     self.__get_anime_id()
     self.__meta = Metadata(
@@ -174,11 +176,10 @@ class ScrapeMetadata():
       self.__start_year,
       self.__authors,
       self.__magazine,
-      self.__publisher,
+      self.__publishers,
       self.__anime_id,
       self.__overview,
     )
-
 
 
 from pprint import (
@@ -214,16 +215,21 @@ class ScrapeTag():
       'script', 
       type='text/javascript',
     )[1]
-    js = ''.join(str(js).split())
+    js = ''.join(
+      str(js).split(),
+    )
     ptn = re.compile(
-      # r'.*world_data.addRows\(([^)]*)\).*',
-      r'.*world_data.addRows\(([^;]*)\);.*',
+      r'.*world_data.addRows\('
+      r'([^;]*)\);.*',
     )
     m = re.match(ptn, js)
     tags = eval(m.group(1))
     df = pd.DataFrame(
       tags,
-      columns=['name', 'amount'],
+      columns=[
+        'name', 
+        'amount',
+      ],
     )
     tot = df.amount.sum()
     df['ratio'] = (
@@ -328,6 +334,10 @@ class ScrapeComic():
     )
     
 
+
+# class FindComicId():
+  
+  # def __cl
 
 
 class ScrapeComics():
