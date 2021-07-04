@@ -17,7 +17,7 @@ import typing
 
 from \
   lib.ruijianime \
-  .scrape.comic_id \
+  .scrape.comic_ids \
 import (
   FindAllComicIds,
 )
@@ -33,9 +33,19 @@ from \
 import (
   ScrapeTags,
 )
+from \
+  lib.ruijianime \
+  .scrape.anime_ids \
+import (
+  ScrapeAllAnimeIds,
+)
 
 
-
+import typing
+import dataclasses
+import bs4 
+import requests
+import re 
 
 
 
@@ -53,9 +63,14 @@ def main():
   # for comic in comics:
   #   print(comic)
   #   # break
-  find = ScrapeTags()
-  tags = find()
-  pprint(tags)
+
+  # find = ScrapeTags()
+  # tags = find()
+  # pprint(tags)
+
+  scrape = ScrapeAllAnimeIds()
+  ids = scrape()
+  pprint(ids)
 
 
 
