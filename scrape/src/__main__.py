@@ -31,7 +31,13 @@ from \
   lib.ruijianime \
   .scrape.comic_tags \
 import (
-  ScrapeTags,
+  ScrapeComicTags,
+)
+from \
+  lib.ruijianime \
+  .scrape.anime_tags \
+import (
+  ScrapeAnimeTags,
 )
 from \
   lib.ruijianime \
@@ -68,28 +74,27 @@ def main():
   #   print(comic)
   #   # break
 
-  # find = ScrapeTags()
+  # find = ScrapeComicTags()
   # tags = find()
   # pprint(tags)
+
+  find = ScrapeAnimeTags()
+  tags = find()
+  pprint(tags)
 
   # scrape = ScrapeAllAnimeIds()
   # ids = scrape()
   # pprint(ids)
 
 
-  # opt = FirefoxOptions()
-  # opt.headless = True
-  # driver = Firefox(
-  #   options=opt,
-  # )
 
-  ids = [
-    3354,
-    3362,
-  ]
-  for i in ids:
-    scrape = ScrapeAnime()
-    pprint(scrape(i))
+  # ids = [
+  #   3354,
+  #   3362,
+  # ]
+  # for i in ids:
+  #   scrape = ScrapeAnime()
+  #   pprint(scrape(i))
 
   
 
