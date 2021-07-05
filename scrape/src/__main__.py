@@ -24,5 +24,12 @@ def main():
 
 
 
+def lambda_handler(
+  event,
+  context,
+):
+  Adam()()
+
+
 if __name__ == '__main__':
   main()
