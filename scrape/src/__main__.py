@@ -343,25 +343,73 @@ class ScrapeComposition():
 
 
 
-from selenium.webdriver import(
-  Firefox,
-  FirefoxOptions,
-)
+# from selenium.webdriver import(
+#   Firefox,
+#   FirefoxOptions,
+# )
 
-from \
-  selenium.webdriver \
-  .remote.webdriver \
-import (
-  WebDriver,
-)
+# from \
+#   selenium.webdriver \
+#   .remote.webdriver \
+# import (
+#   WebDriver,
+# )
 
 
 
 @dataclasses.dataclass
+class Tag():
+  name: str
+  tag_id: int
+
+
+
+class ScrapeTag():
+
+  def __call__(
+    self,
+    soup: bs4.BeautifulSoup,
+  ) -> typing.List[Tag]:
+    self.__soup = soup
+    self.__scrape()
+    return self.__tags
+  
+
+  def __find_elements(
+    self,
+  ) -> typing.NoReturn:
+    elms = self.__soup.find(
+      id='major_keyword',
+    ).find_all('a')
+    self.__elms = elms
+  
+
+  def __get_tag(
+    self,
+    elm: bs4.element.Tag,
+  ) -> Tag:
+    name = elm.text
+    url = elm.get('href')
+    id_ = url.split('=')[-1]
+    return Tag(name, int(id_))
+
+
+  def __scrape(
+    self,
+  ) -> typing.NoReturn:
+    self.__find_elements()
+    self.__tags = [
+      self.__get_tag(elm)
+      for elm in self.__elms
+    ]
+
+
+@dataclasses.dataclass
 class Anime():
+  anime_id: int
   metadata: Metadata
-
-
+  composition: Composition
+  tags: typing.List[Tag]
 
 
 class ScrapeAnime():
@@ -404,15 +452,19 @@ class ScrapeAnime():
   def __scrape(
     self,
   ) -> typing.NoReturn:
-    soup = self.__soup
-    scrape = ScrapeMetadata()
-    res = scrape(soup)
-    print(res)
-    scrape = ScrapeComposition()
-    res = scrape(soup)
-    print(res)
-    self.__anime = None
-  
+    scrapes = (
+      ScrapeMetadata(),
+      ScrapeComposition(),
+      ScrapeTag(),
+    )
+    self.__anime = Anime(
+      self.__id,
+      *(
+        f(self.__soup)
+        for f in scrapes
+      ),
+    )
+
 
 
 
@@ -454,10 +506,8 @@ def main():
     3362,
   ]
   for i in ids:
-    scrape = ScrapeAnime(
-      # driver,
-    )
-    scrape(i)
+    scrape = ScrapeAnime()
+    pprint(scrape(i))
 
   
 
