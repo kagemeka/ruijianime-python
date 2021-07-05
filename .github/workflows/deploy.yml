@@ -2,8 +2,10 @@ name: deploy docker image to ecr
 
 on:
   push:
-    branches:
-      - main
+    # branches:
+    #   - main
+    tags: 
+      - v*
   
 jobs:
   build:
