@@ -13,6 +13,7 @@ class ScrapeAllAnimeIds():
     self.__scrape()
     return self.__ids
   
+  
   def __init__(
     self,
   ) -> typing.NoReturn:
