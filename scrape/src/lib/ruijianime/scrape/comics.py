@@ -3,6 +3,9 @@ from .comic import (
   Comic,
   ScrapeComic,
 )
+from tqdm import (
+  tqdm,
+)
 
 
 class ScrapeComics():
@@ -21,5 +24,5 @@ class ScrapeComics():
     self,
   ) -> typing.Iterator[Comic]:
     f = ScrapeComic()
-    for i in self.__ids:
+    for i in tqdm(self.__ids):
       yield f(i)

@@ -21,7 +21,7 @@ from .tag import (
 
 @dataclasses.dataclass
 class ComicDF():
-  metadata: pd.DataFrame
+  meta: pd.DataFrame
   tag: pd.DataFrame
   author: pd.DataFrame
 
