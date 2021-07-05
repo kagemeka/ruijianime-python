@@ -11,7 +11,9 @@ import bs4
 @dataclasses.dataclass
 class Metadata():
   title: str
-  start_year: int
+  start_year: typing.Optional[
+    int
+  ]
   authors: typing.List[str]
   magazine: typing.Optional[
     str
@@ -77,8 +79,9 @@ class ScrapeMetadata():
       r'^.*:(\d+)年$'
     )
     m = re.match(ptn, s)
-    self.__start_year = int(
-      m.group(1),
+    self.__start_year = (
+      int(m.group(1)) if m
+      else None
     )
 
 

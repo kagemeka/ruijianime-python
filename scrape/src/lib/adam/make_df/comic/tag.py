@@ -1,10 +1,14 @@
 import pandas as pd
 import typing
+from dataclasses import (
+  fields,
+)
 from \
   lib.ruijianime \
   .scrape.comic \
 import (
   Comic,
+  Tag,
 )
 
 
@@ -24,7 +28,13 @@ class MakeTagDF():
   ) -> typing.NoReturn:
     comic = self.__comic
     tags = comic.tags
-    df = pd.DataFrame(tags)
+    df = pd.DataFrame(
+      tags,
+      columns=list(
+        Tag.__annotations__
+        .keys(),
+      ),
+    )
     df['comic_id'] = (
       comic.comic_id
     )
