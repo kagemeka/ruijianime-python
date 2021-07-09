@@ -3,5 +3,5 @@ boto3==1.17.102
 pandas==1.2.5
 requests==2.25.1
 selenium==3.141.0
-tqdm==4.61.1
+tqdm==4.61.2
 webdriver-manager==3.4.2
