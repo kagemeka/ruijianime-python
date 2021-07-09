@@ -4,16 +4,14 @@ from .comic import (
   MakeComicDF,
   ComicDF,
 )
-from lib.adam import (
-  FilterComicIds,
-)
-from \
-  lib.ruijianime \
-  .scrape.comics \
+from lib.ruijianime.scrape \
 import (
   ScrapeComics,
+  ScrapeAllComicIds,
 )
-
+from .fetch_scraped_ids import(
+  FetchScrapedIds,
+)
 
 
 class MakeComicsDF():
@@ -32,37 +30,35 @@ class MakeComicsDF():
   def __get_ids(
     self,
   ) -> typing.NoReturn:
-    get = FilterComicIds()
-    self.__ids = get()
+    ids = ScrapeAllComicIds()()
+    ids = set(ids)
+    ids -= FetchScrapedIds()()
+    self.__ids = list(ids)
   
 
   def __scrape(
     self,
   ) -> typing.NoReturn:
-    f = ScrapeComics()
-    self.__comics = f(
-      self.__ids,
-    )
+    fn = ScrapeComics()
+    ids = self.__ids
+    self.__comics = fn(ids)
   
 
   def __make(
     self,
   ) -> typing.NoReturn:
-    f = MakeComicDF()
+    fn = MakeComicDF()
     comics = self.__comics
     meta = []
     tag = []
     author = []
     for comic in comics:
-      df = f(comic)
+      df = fn(comic)
       meta.append(df.meta)
       tag.append(df.tag)
       author.append(df.author)
-    meta = pd.concat(meta)
-    tag = pd.concat(tag)
-    author = pd.concat(author)
     self.__df = ComicDF(
-      meta,
-      tag,
-      author,
+      pd.concat(meta),
+      pd.concat(tag),
+      pd.concat(author),
     )

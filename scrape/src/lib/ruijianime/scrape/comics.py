@@ -9,20 +9,12 @@ from tqdm import (
 
 
 class ScrapeComics():
-
   def __call__(
     self,
     comic_ids: typing.List[
       int
     ],
   ) -> typing.Iterator[Comic]:
-    self.__ids = comic_ids
-    return self.__scrape()
-
-
-  def __scrape(
-    self,
-  ) -> typing.Iterator[Comic]:
-    f = ScrapeComic()
-    for i in tqdm(self.__ids):
-      yield f(i)
+    fn = ScrapeComic()
+    for i in tqdm(comic_ids):
+      yield fn(i)

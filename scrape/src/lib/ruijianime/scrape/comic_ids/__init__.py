@@ -1,3 +1,3 @@
 from .all import (
-  FindAllComicIds,
+  ScrapeAllComicIds,
 )
