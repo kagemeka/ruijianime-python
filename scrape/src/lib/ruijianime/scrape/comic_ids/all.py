@@ -4,7 +4,7 @@ import requests
 
 
 
-class FindAllComicIds():
+class ScrapeAllComicIds():
   
   def __call__(
     self,
