@@ -1,7 +1,7 @@
 import pandas as pd
 import typing
 from \
-  lib.ruijianime \
+  kgmk.ruijianime \
   .scrape.comic \
 import (
   Comic,

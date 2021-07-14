@@ -4,7 +4,7 @@ from dataclasses import (
   fields,
 )
 from \
-  lib.ruijianime \
+  kgmk.ruijianime \
   .scrape.comic \
 import (
   Comic,
