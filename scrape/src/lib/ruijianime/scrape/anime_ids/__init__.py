@@ -1,3 +1,0 @@
-from .all import (
-  ScrapeAllAnimeIds,
-)

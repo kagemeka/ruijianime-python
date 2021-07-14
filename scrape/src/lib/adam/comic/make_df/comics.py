@@ -4,7 +4,7 @@ from .comic import (
   MakeComicDF,
   ComicDF,
 )
-from lib.ruijianime.scrape \
+from kgmk.ruijianime.scrape \
 import (
   ScrapeComics,
   ScrapeAllComicIds,

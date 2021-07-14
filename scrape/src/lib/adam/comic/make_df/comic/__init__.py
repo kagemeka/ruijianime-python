@@ -2,7 +2,7 @@ import pandas as pd
 import dataclasses
 import typing
 from \
-  lib.ruijianime \
+  kgmk.ruijianime \
   .scrape.comic \
 import (
   Comic,
