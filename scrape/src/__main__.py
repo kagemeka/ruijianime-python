@@ -1,3 +1,4 @@
+import typing
 from lib.adam import (
   AdamComic,
 )
@@ -8,10 +9,7 @@ def main():
   AdamComic()()
 
 
-def lambda_handler(
-  event,
-  context,
-):
+def lambda_handler(event, context) -> typing.NoReturn:
   main()
 
 
