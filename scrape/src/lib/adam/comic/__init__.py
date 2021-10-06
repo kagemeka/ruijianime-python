@@ -1,19 +1,6 @@
-import typing
-
-from .make_df import (
-  MakeComicsDF,
+from .add_new_comics import (
+  add_new_comics,
 )
-
-from .store import (
-  Store,
+from .update_comics import (
+  update_comics,
 )
-
-
-
-class AdamComic():
-  def __call__(
-    self,
-  ) -> typing.NoReturn:
-    df = MakeComicsDF()()
-    if df is None: return
-    Store()(df)

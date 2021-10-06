@@ -1,3 +1,0 @@
-from .comic import (
-  AdamComic,
-)
